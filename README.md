@@ -9,3 +9,10 @@ core features are:
 - From the graph it displays the closed and open issues in a chart manner.
 
 This project was developed by javascript using a react framework and a bunch of libraries.
+
+To run this project simply clone it in your local machine and run the following commands:
+
+- "npm i" to install all libraries used.
+- "npm start" to start a local development server.
+- Also you wll need to create a personal access token on GitHub and replace the one located at "./src/App.js".replace auth: "your_personal access token here".
+- Enjoy
