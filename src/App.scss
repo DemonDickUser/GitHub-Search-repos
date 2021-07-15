@@ -1,0 +1,59 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  text-decoration: none;
+  list-style: none;
+}
+.App {
+  background-color: #f7f7f7;
+
+  .header {
+    padding: 0;
+    margin: 0;
+    background-color: #555456;
+    width: 100%;
+    height: 60px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    .searchInput {
+      position: absolute;
+      left: 10px;
+      width: 320px;
+      height: 40px;
+      padding: 10px;
+    }
+  }
+  .autoCompleteText {
+    width: 320px;
+    height: 20px;
+    display: flex;
+    flex-direction: column;
+    position: "absolute";
+    align-items: center;
+    .list {
+      color: black;
+      background-color: #f7f7f7;
+      padding: 1em;
+      width: 100%;
+
+      z-index: 1;
+    }
+    .list:hover {
+      cursor: pointer;
+      background-color: #b2daff;
+    }
+  }
+  @mixin input {
+    width: 320px;
+    height: 40px;
+    margin-right: 24px;
+    padding: 10px;
+  }
+  .bodyContainer {
+    display: flex;
+    flex-direction: row;
+    padding: 40px;
+  }
+}

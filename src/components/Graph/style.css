@@ -1,0 +1,17 @@
+.rightContent {
+  margin-left: 10px;
+  width: 50%;
+}
+
+.rightContent select {
+  margin-top: 120px;
+  width: 320px;
+  height: 40px;
+}
+
+.rightContent select option {
+  padding: 320px;
+  height: 40px;
+  color: #588bac;
+}
+/*# sourceMappingURL=style.css.map */
