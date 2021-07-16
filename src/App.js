@@ -6,7 +6,6 @@ import Graph from "./components/Graph";
 
 function App() {
   //
-
   const [searchInput, setSearchInput] = useState("");
   const [autoComplete, setAutoComplete] = useState([]);
   const [showAutoComplete, setShowAutoComplete] = useState(false);
@@ -14,7 +13,7 @@ function App() {
 
   //
   const octokit = new Octokit({
-    auth: "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",
+    auth: process.env.REACT_APP_PAT,
   });
 
   const fetchData = async () => {
@@ -31,7 +30,6 @@ function App() {
   };
 
   useEffect(() => {
-    console.log(searchInput);
     fetchData()
       .then((e) => setAutoComplete(e?.data.items))
       .catch((err) => console.error(err));
