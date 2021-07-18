@@ -47,6 +47,8 @@
       -ms-flex-direction: column;
           flex-direction: column;
   position: "absolute";
+  top: 50px;
+  left: 50px;
   -webkit-box-align: center;
       -ms-flex-align: center;
           align-items: center;
@@ -54,7 +56,6 @@
 
 .App .autoCompleteText .list {
   color: black;
-  background-color: #f7f7f7;
   padding: 1em;
   width: 100%;
   z-index: 1;

@@ -1,82 +1,109 @@
 import React, { useEffect, useState } from "react";
 import Chart from "react-google-charts";
+import { DropDown, Loading, Select } from "../Reusables";
 import "./style.css";
 
 const Graph = ({ fakeData }) => {
   //
 
   const [graphData, setGraphData] = useState();
-  const setData = () => {
-    let data = [
-      ["Closed issues", "Well maintained", "just maintained", "Not Maintained"],
-    ];
-    fakeData.map((e) =>
-      e.map((e) => {
-        if (e.issues * 0.1 > e.openIssues) {
-          data.push([e.openIssues, e.closedIssues, null, null]);
-        }
-        if (e.issues * 0.25 > e.openIssues) {
-          data.push([e.openIssues, null, e.closedIssues, null]);
-        } else {
-          data.push([e.openIssues, null, null, e.closedIssues]);
-        }
-      })
-    );
-    data.push([0, 0, 0, 0]);
+  const [chooseGraph, setChooseGraph] = useState(false);
+  const [loadindGraph, setLoadindGraph] = useState(true);
 
-    return data;
+  useEffect(() => {
+    setLoadindGraph(true);
+
+    setTimeout(() => {
+      preData();
+      setLoadindGraph(false);
+    }, 5000);
+  }, [fakeData]);
+
+  const preData = () => {
+    let dataArray = [
+      [
+        "open issues",
+        "Well maintained",
+        "just maintained",
+        "Not Maintained",
+        "",
+      ],
+      [1000, 1000, 1000, 1000, 1000],
+    ];
+
+    //
+
+    fakeData?.map((e) => {
+      if (e.issues * 0.1 > e.openIssues) {
+        dataArray.push([e.openIssues, e.closedIssues, null, null, null]);
+      }
+      if (e.issues * 0.25 > e.openIssues) {
+        dataArray.push([e.openIssues, null, e.closedIssues, null, null]);
+      } else {
+        dataArray.push([e.openIssues, null, null, e.closedIssues, null]);
+      }
+    });
+
+    setGraphData(dataArray);
   };
 
   //----------useEffect-hook
 
-  useEffect(() => {
-    setGraphData(setData());
-    console.log(setData());
-  }, [fakeData]);
-
   return (
     <div className="rightContent">
-      <select>
-        <option value="scatter dot plot">scatter dot plot</option>
-        <option value="Pie chart">Pie chart</option>
-      </select>
-      <Chart
-        width={"600px"}
-        height={"400px"}
-        chartType="ScatterChart"
-        loader={<div>Loading Chart</div>}
-        data={graphData}
-        options={{
-          interpolateNulls: true,
-          hAxis: {
-            title: "Closed issues",
-            scaleType: "log",
-            viewWindow: {
-              max: 1000,
-              min: 0,
-            },
-            gridlines: {
-              color: "none",
-            },
-            ticks: [0, 10, 100, 1000],
-          },
-          vAxis: {
-            title: "Open issues",
-            legend: "none",
-            scaleType: "log",
-            viewWindow: {
-              max: 1000,
-              min: 0,
-            },
-            gridlines: {
-              color: "none",
-            },
-            ticks: [0, 10, 100, 1000],
-          },
-          colors: ["green", "yellow", "red"],
-        }}
-        rootProps={{ "data-testid": "1" }}
+      <Select
+        text="Select a graph"
+        className="select"
+        onClick={() => setChooseGraph(!chooseGraph)}
       />
+      {chooseGraph && (
+        <>
+          <DropDown className="option" text={"Scatter dot plot"} />
+          <DropDown className="option" text={"Pie Chart"} />
+        </>
+      )}
+
+      {loadindGraph ? (
+        <Loading />
+      ) : (
+        <Chart
+          width={"100%"}
+          height={"400px"}
+          chartType="ScatterChart"
+          loader={<div>Loading Chart</div>}
+          data={graphData}
+          options={{
+            legend: "none",
+            interpolateNulls: true,
+            hAxis: {
+              title: "Closed issues",
+              scaleType: "log",
+              viewWindow: {
+                max: 1000,
+                min: 0,
+              },
+              gridlines: {
+                color: "none",
+              },
+              ticks: [0, 1, 10, 100],
+            },
+            vAxis: {
+              title: "Open issues",
+              scaleType: "log",
+              viewWindow: {
+                max: 1000,
+                min: 0,
+              },
+              gridlines: {
+                color: "none",
+              },
+              ticks: [0, 1, 10, 100, 1000],
+            },
+            colors: ["green", "yellow", "red", "white"],
+          }}
+          rootProps={{ "data-testid": "1" }}
+        />
+      )}
     </div>
   );
 };
