@@ -19,7 +19,7 @@ function App() {
 
   //
   const octokit = new Octokit({
-    auth: "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",
+    auth: "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",
   });
 
   const fetchData = async () => {
@@ -65,6 +65,7 @@ function App() {
             className="searchInput"
           />
         </header>
+
         {showAutoComplete && searchInput !== "" && (
           <Link to={`/${autoComplete?.name}`}>
             <div className="autoCompleteText">
@@ -125,8 +126,18 @@ function App() {
                 <Graph fakeData={fData} />
               </Route>
               <Route path={"/"}>
-                <Table fakeData={[]} />
-                <Graph fakeData={[]} />
+                <h3
+                  style={{
+                    width: "100%",
+                    height: "500px",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    color: "#757575",
+                  }}
+                >
+                  Search for an organization
+                </h3>
               </Route>
             </Switch>
           </div>
