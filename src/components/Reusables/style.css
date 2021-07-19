@@ -1,0 +1,22 @@
+.tooltip {
+  position: absolute;
+  -webkit-transform: translateY(-60px);
+          transform: translateY(-60px);
+  background-color: #555456;
+  padding: 10px 20px;
+  border-radius: 7px;
+  color: lightgray;
+}
+
+.loading {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+}
+/*# sourceMappingURL=style.css.map */
