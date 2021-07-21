@@ -15,5 +15,5 @@ To run this project simply clone it in your local machine and run the following 
 
 - "npm i" to install all libraries used.
 - "npm start" to start a local development server.
-- Also you wll need to create a personal access token on GitHub and replace the one located at "./src/App.js".replace auth: "your_personal access token here".
+- Also you will need to create a personal access token on GitHub and replace the one located at "./src/App.js".replace auth: "your_personal access token here".
 - Enjoy
