@@ -1,4 +1,4 @@
-This is a project test.
+This is a teet project.
 
 This project have functionalities that allows a user to search a GitHub organisation.
 core features are: 
@@ -7,6 +7,7 @@ core features are:
 - Displaying data of matching repositories on a table and on a Scatter Chart.
 - From the table it displays ratings, issues and repository name's
 - From the graph it displays the closed and open issues in a chart manner.
+- Selection of diferent graphs.
 
 This project was developed by javascript using a react framework and a bunch of libraries.
 
