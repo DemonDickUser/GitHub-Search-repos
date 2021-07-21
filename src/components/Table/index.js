@@ -2,8 +2,7 @@ import React, { useState } from "react";
 import ArrowDropDownIcon from "@material-ui/icons/ArrowDropDown";
 import "./style.css";
 import { useEffect } from "react";
-import { Tooltip } from "../Reusables";
-import { Input } from "../Reusables";
+import { Input, Tooltip } from "../Reusables";
 
 const Table = ({ fakeData }) => {
   //
@@ -41,14 +40,16 @@ const Table = ({ fakeData }) => {
     //
     data.map((e) =>
       e.sort((a, b) => {
+        let value = null;
         const nameA = a.name.toUpperCase();
         const nameB = b.name.toUpperCase();
         if (nameA < nameB) {
-          return -1;
+          value = -1;
         }
         if (nameA > nameB) {
-          return 1;
+          value = 1;
         }
+        return value;
       })
     );
     setSortName(true);
@@ -70,12 +71,14 @@ const Table = ({ fakeData }) => {
 
     data.map((e) =>
       e.sort((a, b) => {
+        let value = null;
         if (a.issues < b.issues) {
-          return -1;
+          value = -1;
         }
         if (a.issues > b.issues) {
-          return 1;
+          value = 1;
         }
+        return value;
       })
     );
     setData(data);
@@ -96,16 +99,18 @@ const Table = ({ fakeData }) => {
     data.map((e) =>
       e.sort((a, b) => {
         //
+        let value = null;
 
         if (a.stars < b.stars) {
-          return -1;
+          value = -1;
         }
 
         //...
 
         if (a.stars > b.stars) {
-          return 1;
+          value = 1;
         }
+        return value;
       })
     );
     setData(data);
@@ -116,9 +121,11 @@ const Table = ({ fakeData }) => {
   useEffect(() => {
     const filtedData = fakeData.map((e) =>
       e.filter((e) => {
+        let value = null;
         if (e.name.match(filtRepo)) {
-          return e;
+          value = e;
         }
+        return value;
       })
     );
     setData(filtedData);
@@ -146,15 +153,17 @@ const Table = ({ fakeData }) => {
       const data = fakeData.map((e) =>
         //
         e.filter((e) => {
+          let value = null;
           if (maxData !== undefined && minData !== undefined) {
-            return e.issues >= minData && e.issues <= maxData;
+            value = e.issues >= minData && e.issues <= maxData;
           }
           if (maxData === undefined && minData !== undefined) {
-            return e.issues >= minData;
+            value = e.issues >= minData;
           }
           if (maxData !== undefined && minData === undefined) {
-            return e.issues <= maxData;
+            value = e.issues <= maxData;
           }
+          return value;
         })
       );
       setData(data);
