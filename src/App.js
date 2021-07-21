@@ -10,6 +10,7 @@ function App() {
   //
   const [searchInput, setSearchInput] = useState("");
   const [autoComplete, setAutoComplete] = useState(null);
+  const [searchResult, setSearchResult] = useState(null);
   const [loading, setLoading] = useState(true);
   const [showAutoComplete, setShowAutoComplete] = useState(false);
   const [fData, setFData] = useState([]);
@@ -18,29 +19,51 @@ function App() {
   //
 
   //
-  const octokit = new Octokit({
-    auth: "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",
-  });
-
-  const fetchData = async () => {
-    if (searchInput !== "") {
-      setLoading(true);
-
-      try {
-        const response = await octokit.request("GET /orgs/{org}", {
-          org: searchInput,
-        });
-        //
-
-        setAutoComplete(response.data);
-        setLoading(false);
-      } catch (err) {
-        console.error(err);
-      }
-    }
-  };
 
   useEffect(() => {
+    const fetchData = async () => {
+      const octokit = new Octokit({
+        auth: "Personal_access_Token",
+      });
+      if (searchInput !== "") {
+        setLoading(true);
+
+        try {
+          const auto = await octokit.request(
+            "GET /organizations?per_page={per_page}",
+            {
+              per_page: 99,
+            }
+          );
+
+          //
+
+          const data = auto.data?.filter((e) => e.login.includes(searchInput));
+          setSearchResult(data);
+
+          const response = await octokit.request(
+            "GET /orgs/{org}",
+            {
+              org: searchInput,
+            },
+            (err) => {
+              console.log(err);
+            }
+          );
+
+          //
+
+          setAutoComplete(response.data);
+          setLoading(false);
+          //
+          return;
+        } catch (err) {
+          //search not found
+          return;
+        }
+      }
+    };
+
     fetchData();
     setLoading(false);
   }, [searchInput]);
@@ -64,11 +87,25 @@ function App() {
             onChange={(e) => setSearchInput(e.target.value)}
             className="searchInput"
           />
+          {showAutoComplete && searchInput === "" && (
+            <p
+              style={{
+                position: "absolute",
+                top: "70px",
+                left: "10px",
+                backgroundColor: "#555456",
+                padding: "10px",
+                borderRadius: "7px",
+                color: "lightgray",
+              }}
+            >
+              Enter a search{" "}
+            </p>
+          )}
         </header>
-
-        {showAutoComplete && searchInput !== "" && (
-          <Link to={`/${autoComplete?.name}`}>
-            <div className="autoCompleteText">
+        <form action="submit" method="get">
+          {showAutoComplete && searchInput !== "" && (
+            <Link className="autoCompleteText" to={`/${autoComplete?.name}`}>
               <DropDown
                 text={autoComplete?.name}
                 onClick={() => {
@@ -79,7 +116,7 @@ function App() {
                       return e.json();
                     })
                     .then((e) => {
-                      e.map((e) => {
+                      e.forEach((e) => {
                         //----closed issues url
 
                         const url = `${e.issues_url.slice(
@@ -101,6 +138,8 @@ function App() {
                               closedIssues: closedIssues,
                               name: e.full_name,
                               stars: e.stargazers_count,
+                              createdAt: e.created_at,
+                              updatedAt: e.updated_at,
                             });
                             setDataReady(true);
                           })
@@ -110,12 +149,71 @@ function App() {
                     })
                     .catch((e) => console.error(e));
                 }}
-                key={autoComplete?.id}
                 className="list"
               />
-            </div>
-          </Link>
-        )}
+            </Link>
+          )}
+          {showAutoComplete &&
+            searchInput !== "" &&
+            searchResult?.map((e) => {
+              return (
+                <Link
+                  key={e.id}
+                  style={{ paddingTop: "50px", marginTop: 0 }}
+                  className="autoCompleteText"
+                  to={`/${e.login}`}
+                >
+                  <DropDown
+                    text={e.login}
+                    style={{ color: "black" }}
+                    className="list"
+                    onClick={() => {
+                      const uri = e?.repos_url;
+                      const array = [];
+
+                      fetch(uri)
+                        .then((e) => {
+                          return e.json();
+                        })
+                        .then((e) => {
+                          e.forEach((e) => {
+                            //----closed issues url
+
+                            const url = `${e.issues_url.slice(
+                              0,
+                              e.issues_url.length - 9
+                            )}?state=closed`;
+
+                            const fetchClosedIssues = async () => {
+                              const dataFetch = await fetch(url);
+                              const response = await dataFetch.json();
+                              return response.length;
+                            };
+
+                            fetchClosedIssues()
+                              .then((closedIssues) => {
+                                array.push({
+                                  openIssues: e.open_issues,
+                                  issues: e.open_issues + closedIssues,
+                                  closedIssues: closedIssues,
+                                  name: e.full_name,
+                                  stars: e.stargazers_count,
+                                  createdAt: e.created_at,
+                                  updatedAt: e.updated_at,
+                                });
+                                setDataReady(true);
+                              })
+                              .catch((err) => console.error(err));
+                          });
+                          setFData(array);
+                        })
+                        .catch((e) => console.error(e));
+                    }}
+                  />
+                </Link>
+              );
+            })}
+        </form>
         {loading ? (
           <Loading />
         ) : (
