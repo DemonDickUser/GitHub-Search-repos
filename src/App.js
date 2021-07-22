@@ -3,8 +3,11 @@ import { Octokit } from "@octokit/core";
 import { useEffect, useState } from "react";
 import Table from "./components/Table";
 import Graph from "./components/Graph";
-import { DropDown, Input, Loading } from "./components/Reusables";
 import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
+import dotenv from "dotenv";
+import { Input } from "./components/Reusables/Form";
+import { DropDown, Loading } from "./components/Reusables/Utilities";
+dotenv.config();
 
 function App() {
   //
@@ -18,13 +21,18 @@ function App() {
 
   //
 
-  //
+  const acessToken = process.env.AUTH_TOKEN;
+
+  const octokit = new Octokit({
+    auth: acessToken,
+  });
 
   useEffect(() => {
+    //
+
     const fetchData = async () => {
-      const octokit = new Octokit({
-        auth: "Personal_access_Token",
-      });
+      //
+
       if (searchInput !== "") {
         setLoading(true);
 
@@ -37,28 +45,17 @@ function App() {
           );
 
           //
-
           const data = auto.data?.filter((e) => e.login.includes(searchInput));
           setSearchResult(data);
 
-          const response = await octokit.request(
-            "GET /orgs/{org}",
-            {
-              org: searchInput,
-            },
-            (err) => {
-              console.log(err);
-            }
-          );
-
-          //
-
-          setAutoComplete(response.data);
           setLoading(false);
           //
           return;
         } catch (err) {
-          //search not found
+          //search not found.
+
+          alert("Something went wrong, please try again.\n" + err);
+
           return;
         }
       }
@@ -71,11 +68,129 @@ function App() {
 
   // ----------functions
 
+  const submitForm = async (e) => {
+    e.preventDefault();
+
+    if (searchInput === "") {
+      alert("Enter an organization to search");
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      const response = await octokit.request("GET /orgs/{org}", {
+        org: searchInput,
+      });
+      setAutoComplete(response.data);
+      setLoading(false);
+    } catch (err) {
+      alert("Something went wrong, please try again.\n" + err);
+    }
+
+    //
+  };
+
+  const clickAutoComplete = () => {
+    const uri = autoComplete?.repos_url;
+    const array = [];
+    fetch(uri)
+      .then((e) => {
+        return e.json();
+      })
+      .then((e) => {
+        setSearchInput("");
+        e.forEach((e) => {
+          //----closed issues url
+
+          const url = `${e.issues_url.slice(
+            0,
+            e.issues_url.length - 9
+          )}?state=closed`;
+
+          const fetchClosedIssues = async () => {
+            const dataFetch = await fetch(url);
+            const response = await dataFetch.json();
+            return response.length;
+          };
+
+          fetchClosedIssues()
+            .then((closedIssues) => {
+              array.push({
+                openIssues: e.open_issues,
+                issues: e.open_issues + closedIssues,
+                closedIssues: closedIssues,
+                name: e.full_name,
+                stars: e.stargazers_count,
+                createdAt: e.created_at,
+                updatedAt: e.updated_at,
+              });
+              setDataReady(true);
+            })
+            .catch(() => {
+              return;
+            });
+        });
+        setFData(array);
+      })
+      .catch(() => {
+        return;
+      });
+  };
+
+  const clickResults = (e) => {
+    const uri = e?.repos_url;
+    const array = [];
+
+    fetch(uri)
+      .then((e) => {
+        return e.json();
+      })
+      .then((e) => {
+        setSearchInput("");
+
+        e.forEach((e) => {
+          //----closed issues url
+
+          const url = `${e.issues_url.slice(
+            0,
+            e.issues_url.length - 9
+          )}?state=closed`;
+
+          const fetchClosedIssues = async () => {
+            const dataFetch = await fetch(url);
+            const response = await dataFetch.json();
+            return response.length;
+          };
+
+          fetchClosedIssues()
+            .then((closedIssues) => {
+              array.push({
+                openIssues: e.open_issues,
+                issues: e.open_issues + closedIssues,
+                closedIssues: closedIssues,
+                name: e.full_name,
+                stars: e.stargazers_count,
+                createdAt: e.created_at,
+                updatedAt: e.updated_at,
+              });
+              setDataReady(true);
+            })
+            .catch(() => {
+              return;
+            });
+        });
+        setFData(array);
+      })
+      .catch(() => {
+        return;
+      });
+  };
   //
   return (
     <div className="App">
       <Router>
-        <header className="header">
+        <form type="submit" onSubmit={submitForm} className="header">
           <Input
             placeholder="Search Organizations"
             onFocus={() => setShowAutoComplete(true)}
@@ -99,56 +214,16 @@ function App() {
                 color: "lightgray",
               }}
             >
-              Enter a search{" "}
+              Enter a search
             </p>
           )}
-        </header>
+        </form>
         <form action="submit" method="get">
           {showAutoComplete && searchInput !== "" && (
             <Link className="autoCompleteText" to={`/${autoComplete?.name}`}>
               <DropDown
                 text={autoComplete?.name}
-                onClick={() => {
-                  const uri = autoComplete?.repos_url;
-                  const array = [];
-                  fetch(uri)
-                    .then((e) => {
-                      return e.json();
-                    })
-                    .then((e) => {
-                      e.forEach((e) => {
-                        //----closed issues url
-
-                        const url = `${e.issues_url.slice(
-                          0,
-                          e.issues_url.length - 9
-                        )}?state=closed`;
-
-                        const fetchClosedIssues = async () => {
-                          const dataFetch = await fetch(url);
-                          const response = await dataFetch.json();
-                          return response.length;
-                        };
-
-                        fetchClosedIssues()
-                          .then((closedIssues) => {
-                            array.push({
-                              openIssues: e.open_issues,
-                              issues: e.open_issues + closedIssues,
-                              closedIssues: closedIssues,
-                              name: e.full_name,
-                              stars: e.stargazers_count,
-                              createdAt: e.created_at,
-                              updatedAt: e.updated_at,
-                            });
-                            setDataReady(true);
-                          })
-                          .catch((err) => console.error(err));
-                      });
-                      setFData(array);
-                    })
-                    .catch((e) => console.error(e));
-                }}
+                onClick={() => clickAutoComplete()}
                 className="list"
               />
             </Link>
@@ -167,48 +242,7 @@ function App() {
                     text={e.login}
                     style={{ color: "black" }}
                     className="list"
-                    onClick={() => {
-                      const uri = e?.repos_url;
-                      const array = [];
-
-                      fetch(uri)
-                        .then((e) => {
-                          return e.json();
-                        })
-                        .then((e) => {
-                          e.forEach((e) => {
-                            //----closed issues url
-
-                            const url = `${e.issues_url.slice(
-                              0,
-                              e.issues_url.length - 9
-                            )}?state=closed`;
-
-                            const fetchClosedIssues = async () => {
-                              const dataFetch = await fetch(url);
-                              const response = await dataFetch.json();
-                              return response.length;
-                            };
-
-                            fetchClosedIssues()
-                              .then((closedIssues) => {
-                                array.push({
-                                  openIssues: e.open_issues,
-                                  issues: e.open_issues + closedIssues,
-                                  closedIssues: closedIssues,
-                                  name: e.full_name,
-                                  stars: e.stargazers_count,
-                                  createdAt: e.created_at,
-                                  updatedAt: e.updated_at,
-                                });
-                                setDataReady(true);
-                              })
-                              .catch((err) => console.error(err));
-                          });
-                          setFData(array);
-                        })
-                        .catch((e) => console.error(e));
-                    }}
+                    onClick={() => clickResults(e)}
                   />
                 </Link>
               );

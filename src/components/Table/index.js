@@ -2,7 +2,8 @@ import React, { useState } from "react";
 import ArrowDropDownIcon from "@material-ui/icons/ArrowDropDown";
 import "./style.css";
 import { useEffect } from "react";
-import { Input, Tooltip } from "../Reusables";
+import { Input } from "../Reusables/Form";
+import { Tooltip } from "../Reusables/Utilities";
 
 const Table = ({ fakeData }) => {
   //
