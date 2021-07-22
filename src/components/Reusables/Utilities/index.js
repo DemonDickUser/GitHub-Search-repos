@@ -1,40 +1,9 @@
-import React from "react";
-import "./style.css";
 import ArrowDropDownIcon from "@material-ui/icons/ArrowDropDown";
 import LoopIcon from "@material-ui/icons/Loop";
+import React from "react";
 
 export const Tooltip = ({ tip }) => {
   return <div className="tooltip">{tip}</div>;
-};
-
-export const Input = ({
-  className,
-  onBlur,
-  id,
-  onFocus,
-  onChange,
-  placeholder,
-  type,
-  key,
-  onClick,
-  value,
-}) => {
-  if (value === undefined) {
-  }
-  return (
-    <input
-      value={value}
-      onFocus={onFocus}
-      onClick={onClick}
-      onBlur={onBlur}
-      onChange={onChange}
-      placeholder={placeholder}
-      id={id}
-      className={className}
-      type={type}
-      key={key}
-    />
-  );
 };
 
 export const DropDown = ({ text, onClick, className }) => {
