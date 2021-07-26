@@ -48,15 +48,20 @@ function App() {
           const data = auto.data?.filter((e) => e.login.includes(searchInput));
           setSearchResult(data);
 
-          setLoading(false);
           //
-          return;
         } catch (err) {
           //search not found.
 
           alert("Something went wrong, please try again.\n" + err);
+        }
 
-          return;
+        try {
+          const response = await octokit.request("GET /orgs/{org}", {
+            org: searchInput,
+          });
+          setAutoComplete(response.data);
+        } catch (err) {
+          //no search output
         }
       }
     };
@@ -67,29 +72,6 @@ function App() {
   //
 
   // ----------functions
-
-  const submitForm = async (e) => {
-    e.preventDefault();
-
-    if (searchInput === "") {
-      alert("Enter an organization to search");
-      return;
-    }
-
-    setLoading(true);
-
-    try {
-      const response = await octokit.request("GET /orgs/{org}", {
-        org: searchInput,
-      });
-      setAutoComplete(response.data);
-      setLoading(false);
-    } catch (err) {
-      alert("Something went wrong, please try again.\n" + err);
-    }
-
-    //
-  };
 
   const clickAutoComplete = () => {
     const uri = autoComplete?.repos_url;
@@ -186,11 +168,12 @@ function App() {
         return;
       });
   };
+
   //
   return (
     <div className="App">
       <Router>
-        <form type="submit" onSubmit={submitForm} className="header">
+        <div  className="header">
           <Input
             placeholder="Search Organizations"
             onFocus={() => setShowAutoComplete(true)}
@@ -217,37 +200,36 @@ function App() {
               Enter a search
             </p>
           )}
-        </form>
-        <form action="submit" method="get">
-          {showAutoComplete && searchInput !== "" && (
-            <Link className="autoCompleteText" to={`/${autoComplete?.name}`}>
-              <DropDown
-                text={autoComplete?.name}
-                onClick={() => clickAutoComplete()}
-                className="list"
-              />
-            </Link>
-          )}
-          {showAutoComplete &&
-            searchInput !== "" &&
-            searchResult?.map((e) => {
-              return (
-                <Link
-                  key={e.id}
-                  style={{ paddingTop: "50px", marginTop: 0 }}
-                  className="autoCompleteText"
-                  to={`/${e.login}`}
-                >
-                  <DropDown
-                    text={e.login}
-                    style={{ color: "black" }}
-                    className="list"
-                    onClick={() => clickResults(e)}
-                  />
-                </Link>
-              );
-            })}
-        </form>
+          <div className="autoCompleteText">
+            {showAutoComplete && searchInput && autoComplete?.name && (
+              <Link className="link" to={`/${autoComplete?.name}`}>
+                <DropDown
+                  text={autoComplete?.name}
+                  onClick={() => clickAutoComplete()}
+                  className="list"
+                />
+              </Link>
+            )}
+            {showAutoComplete &&
+              searchInput &&
+              searchResult?.map((e) => {
+                return (
+                  <Link
+                    className="link"
+                    key={e.id}
+                    style={{ paddingTop: "50px", marginTop: 0 }}
+                    to={`/${e.login}`}
+                  >
+                    <DropDown
+                      text={e.login}
+                      className="list"
+                      onClick={() => clickResults(e)}
+                    />
+                  </Link>
+                );
+              })}
+          </div>
+        </div>
         {loading ? (
           <Loading />
         ) : (

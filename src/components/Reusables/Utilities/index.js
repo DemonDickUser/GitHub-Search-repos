@@ -1,6 +1,7 @@
 import ArrowDropDownIcon from "@material-ui/icons/ArrowDropDown";
 import LoopIcon from "@material-ui/icons/Loop";
 import React from "react";
+import "../style.css";
 
 export const Tooltip = ({ tip }) => {
   return <div className="tooltip">{tip}</div>;
